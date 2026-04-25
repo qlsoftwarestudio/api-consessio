@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: concessio
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/concessio}
+    username: ${SPRING_DATASOURCE_USERNAME:concessio}
+    password: ${SPRING_DATASOURCE_PASSWORD:concessio123}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+    show-sql: true
+
+server:
+  port: 8080
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:concessio-super-secret-key-for-jwt-tokens-2026}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+# Logging Configuration
+logging:
+  level:
+    com.concessio.crm: DEBUG
+    org.springframework.security: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# App Configuration
+app:
+  storage:
+    path: ${APP_STORAGE_PATH:./uploads}
