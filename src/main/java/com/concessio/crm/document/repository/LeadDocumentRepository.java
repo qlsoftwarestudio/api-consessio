@@ -19,19 +19,19 @@ public interface LeadDocumentRepository extends JpaRepository<LeadDocument, Long
 
     List<LeadDocument> findByTenantIdAndLeadId(Long tenantId, Long leadId);
 
-    List<LeadDocument> findByLeadIdAndType(Long leadId, DocumentType type);
+    List<LeadDocument> findByTenantIdAndLeadIdAndType(Long tenantId, Long leadId, DocumentType type);
 
-    List<LeadDocument> findByLeadIdAndVerified(Long leadId, boolean verified);
+    List<LeadDocument> findByTenantIdAndLeadIdAndVerified(Long tenantId, Long leadId, boolean verified);
 
     @Query("SELECT ld.type, COUNT(ld) FROM LeadDocument ld WHERE ld.lead.id = :leadId GROUP BY ld.type")
     List<Object[]> countByTypeForLead(@Param("leadId") Long leadId);
 
-    @Query("SELECT ld.type FROM LeadDocument ld WHERE ld.lead.id = :leadId AND ld.verified = true")
-    List<DocumentType> findVerifiedTypesByLeadId(@Param("leadId") Long leadId);
+    @Query("SELECT ld.type FROM LeadDocument ld WHERE ld.tenant.id = :tenantId AND ld.lead.id = :leadId AND ld.verified = true")
+    List<DocumentType> findVerifiedTypesByTenantIdAndLeadId(@Param("tenantId") Long tenantId, @Param("leadId") Long leadId);
 
     Optional<LeadDocument> findByIdAndTenantId(Long id, Long tenantId);
 
-    long countByLeadId(Long leadId);
+    long countByTenantIdAndLeadId(Long tenantId, Long leadId);
 
-    long countByLeadIdAndVerified(Long leadId, boolean verified);
+    long countByTenantIdAndLeadIdAndVerified(Long tenantId, Long leadId, boolean verified);
 }

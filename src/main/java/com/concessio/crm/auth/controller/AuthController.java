@@ -40,14 +40,14 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserRequestDTO request) {
-        logger.info("user" + request.toString());
+        logger.info("Register request received for email: {}", request.getEmail());
         String token = authService.register(request);
         return ResponseEntity.ok(Map.of("token", token, "message", "User registered successfully"));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
-        String token = authService.login(request.getEmail(), request.getPassword());
+        String token = authService.login(request.getTenantCode(), request.getEmail(), request.getPassword());
         return ResponseEntity.ok(Map.of("token", token, "message", "Login successful"));
     }
 

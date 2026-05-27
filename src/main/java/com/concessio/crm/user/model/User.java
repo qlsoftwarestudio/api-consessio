@@ -28,7 +28,7 @@ public class User {
     @NotNull
     @NotBlank
     @Email
-    @Column(unique = true)
+    @Column(nullable = false)
     private String email;
 
     private String phone; // Teléfono del vendedor/a

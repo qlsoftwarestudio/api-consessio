@@ -47,4 +47,9 @@ public class TenantService {
         return tenantRepository.findByName(name)
                 .orElseThrow(() -> new IllegalArgumentException("Tenant not found with name: " + name));
     }
+
+    public Tenant findByCode(String code) {
+        return tenantRepository.findByCode(code)
+                .orElseThrow(() -> new IllegalArgumentException("Tenant not found with code: " + code));
+    }
 }

@@ -34,26 +34,30 @@ public class LeadDocumentController {
     public ResponseEntity<List<LeadDocument>> getDocumentsByLeadAndType(
             @PathVariable Long leadId, 
             @PathVariable DocumentType type) {
-        List<LeadDocument> documents = leadDocumentService.findByLeadAndType(leadId, type);
+        Long tenantId = TenantContext.getCurrentTenant();
+        List<LeadDocument> documents = leadDocumentService.findByLeadAndType(tenantId, leadId, type);
         return ResponseEntity.ok(documents);
     }
 
     @GetMapping("/lead/{leadId}/verified")
     public ResponseEntity<List<LeadDocument>> getVerifiedDocuments(@PathVariable Long leadId) {
-        List<LeadDocument> documents = leadDocumentService.findVerifiedByLead(leadId);
+        Long tenantId = TenantContext.getCurrentTenant();
+        List<LeadDocument> documents = leadDocumentService.findVerifiedByLead(tenantId, leadId);
         return ResponseEntity.ok(documents);
     }
 
     @GetMapping("/lead/{leadId}/checklist")
     public ResponseEntity<List<DocumentType>> getDocumentChecklist(@PathVariable Long leadId) {
         // Retorna lista de tipos de documentos que YA están verificados
-        List<DocumentType> verifiedTypes = leadDocumentService.getVerifiedTypes(leadId);
+        Long tenantId = TenantContext.getCurrentTenant();
+        List<DocumentType> verifiedTypes = leadDocumentService.getVerifiedTypes(tenantId, leadId);
         return ResponseEntity.ok(verifiedTypes);
     }
 
     @GetMapping("/lead/{leadId}/stats")
     public ResponseEntity<LeadDocumentService.DocumentStats> getDocumentStats(@PathVariable Long leadId) {
-        LeadDocumentService.DocumentStats stats = leadDocumentService.getDocumentStats(leadId);
+        Long tenantId = TenantContext.getCurrentTenant();
+        LeadDocumentService.DocumentStats stats = leadDocumentService.getDocumentStats(tenantId, leadId);
         return ResponseEntity.ok(stats);
     }
 

@@ -41,13 +41,13 @@ public class LeadDocumentService {
     }
 
     @Transactional(readOnly = true)
-    public List<LeadDocument> findByLeadAndType(Long leadId, DocumentType type) {
-        return leadDocumentRepository.findByLeadIdAndType(leadId, type);
+    public List<LeadDocument> findByLeadAndType(Long tenantId, Long leadId, DocumentType type) {
+        return leadDocumentRepository.findByTenantIdAndLeadIdAndType(tenantId, leadId, type);
     }
 
     @Transactional(readOnly = true)
-    public List<LeadDocument> findVerifiedByLead(Long leadId) {
-        return leadDocumentRepository.findByLeadIdAndVerified(leadId, true);
+    public List<LeadDocument> findVerifiedByLead(Long tenantId, Long leadId) {
+        return leadDocumentRepository.findByTenantIdAndLeadIdAndVerified(tenantId, leadId, true);
     }
 
     @Transactional(readOnly = true)
@@ -56,15 +56,15 @@ public class LeadDocumentService {
     }
 
     @Transactional(readOnly = true)
-    public DocumentStats getDocumentStats(Long leadId) {
-        long total = leadDocumentRepository.countByLeadId(leadId);
-        long verified = leadDocumentRepository.countByLeadIdAndVerified(leadId, true);
+    public DocumentStats getDocumentStats(Long tenantId, Long leadId) {
+        long total = leadDocumentRepository.countByTenantIdAndLeadId(tenantId, leadId);
+        long verified = leadDocumentRepository.countByTenantIdAndLeadIdAndVerified(tenantId, leadId, true);
         return new DocumentStats(total, verified, total - verified);
     }
 
     @Transactional(readOnly = true)
-    public List<DocumentType> getVerifiedTypes(Long leadId) {
-        return leadDocumentRepository.findVerifiedTypesByLeadId(leadId);
+    public List<DocumentType> getVerifiedTypes(Long tenantId, Long leadId) {
+        return leadDocumentRepository.findVerifiedTypesByTenantIdAndLeadId(tenantId, leadId);
     }
 
     public LeadDocument uploadDocument(LeadDocument document, byte[] fileContent, 

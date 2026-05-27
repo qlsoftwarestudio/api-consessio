@@ -60,15 +60,9 @@ public class AuthService {
         User newUser = userMapper.toEntity(userRequest);
         newUser.setTenant(tenant);
         
-        // Debug logging
-        logger.info("Mapped user: {}", newUser);
-        logger.info("User email after mapping: '{}'", newUser.getEmail());
-        
         // Encode password
         String hashedPassword = encoder.encode(userRequest.getPassword());
         newUser.setPassword(hashedPassword);
-        
-        logger.info("User before save: {}", newUser);
 
         try {
             User savedUser = userRepository.save(newUser);
@@ -81,17 +75,18 @@ public class AuthService {
         }
     }
 
-    public String login(String email, String password) {
+    public String login(String tenantCode, String email, String password) {
 
-        User user = userRepository.findByEmail(email)
+        Tenant tenant = tenantService.findByCode(tenantCode);
+
+        User user = userRepository.findByEmailAndTenantId(email, tenant.getId())
                 .orElseThrow(() -> new AuthenticationException("User not found"));
 
         if (!encoder.matches(password, user.getPassword())) {
             throw new AuthenticationException("Invalid credentials");
         }
 
-        Long tenantId = user.getTenant().getId();
-        return jwtService.generateToken(email, tenantId);
+        return jwtService.generateToken(email, tenant.getId());
     }
 }
 
