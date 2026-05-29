@@ -34,8 +34,15 @@ spring:
             region:
               factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
 
-server:
-  port: ${PORT:8080}
+ # Configuración del servidor
+ server:
+    port: ${PORT:8080}
+    servlet:
+      context-path: /
+    # Configuración para producción
+    compression:
+      enabled: true
+      mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/json,application/xml
 
 # JWT Configuration
 jwt:
