@@ -2,10 +2,16 @@ spring:
   application:
     name: concessio
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:concessio}
-     username: ${DB_USER:postgres}
-    password: ${DB_PASSWORD:postgres}
+    url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:concessio}
+    username: ${PGUSER:concessio}
+    password: ${PGPASSWORD:concessio123}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 600000
 
   jpa:
     hibernate:
@@ -17,7 +23,7 @@ server:
 
 # JWT Configuration
 jwt:
-  secret: ${JWT_SECRET:my-super-secret-key-for-development-1234567890}
+  secret: ${JWT_SECRET:changeme_in_production}
   expiration: ${JWT_EXPIRATION:86400000}
 
 # Logging Configuration
