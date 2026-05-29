@@ -18,7 +18,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-@Component
+// Disabled: TenantContextFilter handles JWT + tenant context correctly.
+// This class is kept for reference but not registered as a Spring bean.
+// @Component
 public class JwtFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);

@@ -15,34 +15,23 @@ spring:
 
   jpa:
     hibernate:
-    ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
     show-sql: ${SPRING_JPA_SHOW_SQL:false}
     properties:
-        hibernate:
-          dialect: org.hibernate.dialect.PostgreSQLDialect
-          # Configuración para persistencia y rendimiento
-          jdbc:
-            batch_size: 20
-            order_inserts: true
-            order_updates: true
-          # Multi-tenancy
-          tenant_identifier_resolver: com.logiair.os.tenant.TenantIdentifierResolver
-          # Cache para mejor rendimiento
-          cache:
-            use_second_level_cache: true
-            use_query_cache: true
-            region:
-              factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          batch_size: 20
+          order_inserts: true
+          order_updates: true
 
- # Configuración del servidor
- server:
-    port: ${PORT:8080}
-    servlet:
-      context-path: /
-    # Configuración para producción
-    compression:
-      enabled: true
-      mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/json,application/xml
+server:
+  port: ${PORT:8080}
+  servlet:
+    context-path: /
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/json,application/xml
 
 # JWT Configuration
 jwt:
