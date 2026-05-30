@@ -10,7 +10,14 @@ public class ConcessioApplication {
 
 	public static void main(String[] args) {
 		String databaseUrl = System.getenv("DATABASE_URL");
-		if (databaseUrl != null && !databaseUrl.isBlank()) {
+		if (databaseUrl == null || databaseUrl.isBlank()) {
+			databaseUrl = System.getenv("SPRING_DATASOURCE_URL");
+		}
+		if (databaseUrl == null || databaseUrl.isBlank()) {
+			databaseUrl = System.getProperty("spring.datasource.url");
+		}
+
+		if (databaseUrl != null && !databaseUrl.isBlank() && databaseUrl.startsWith("postgresql://")) {
 			try {
 				URI uri = URI.create(databaseUrl);
 				String userInfo = uri.getUserInfo();
@@ -30,9 +37,13 @@ public class ConcessioApplication {
 					System.setProperty("spring.datasource.username", parts[0]);
 					System.setProperty("spring.datasource.password", parts[1]);
 				}
+
+				System.out.println("Railway DATABASE_URL parsed. JDBC URL: " + jdbcUrl);
 			} catch (Exception e) {
-				System.err.println("Failed to parse DATABASE_URL: " + e.getMessage());
+				System.err.println("Failed to parse DATABASE_URL/SPRING_DATASOURCE_URL: " + e.getMessage());
 			}
+		} else if (databaseUrl != null) {
+			System.out.println("Using existing datasource URL: " + databaseUrl);
 		}
 
 		SpringApplication.run(ConcessioApplication.class, args);
