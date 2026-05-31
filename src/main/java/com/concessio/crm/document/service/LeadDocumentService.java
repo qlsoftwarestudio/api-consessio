@@ -3,18 +3,14 @@ package com.concessio.crm.document.service;
 import com.concessio.crm.document.model.DocumentType;
 import com.concessio.crm.document.model.LeadDocument;
 import com.concessio.crm.document.repository.LeadDocumentRepository;
+import com.concessio.crm.storage.StorageService;
 import com.concessio.crm.tenant.model.Tenant;
 import com.concessio.crm.user.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -27,12 +23,11 @@ public class LeadDocumentService {
     private static final Logger logger = LoggerFactory.getLogger(LeadDocumentService.class);
 
     private final LeadDocumentRepository leadDocumentRepository;
-    
-    @Value("${app.storage.path:./uploads}")
-    private String storagePath;
+    private final StorageService storageService;
 
-    public LeadDocumentService(LeadDocumentRepository leadDocumentRepository) {
+    public LeadDocumentService(LeadDocumentRepository leadDocumentRepository, StorageService storageService) {
         this.leadDocumentRepository = leadDocumentRepository;
+        this.storageService = storageService;
     }
 
     @Transactional(readOnly = true)
@@ -81,26 +76,14 @@ public class LeadDocumentService {
         // Generar nombre único para el archivo
         String fileExtension = getFileExtension(originalFilename);
         String storedFilename = UUID.randomUUID().toString() + fileExtension;
-        
-        // Crear estructura de carpetas por tenant
-        Path tenantPath = Paths.get(storagePath, "tenant_" + tenantId);
-        Path leadPath = tenantPath.resolve("lead_" + document.getLead().getId());
-        
-        try {
-            // Crear directorios si no existen
-            Files.createDirectories(leadPath);
-            
-            // Guardar archivo físico
-            Path filePath = leadPath.resolve(storedFilename);
-            Files.write(filePath, fileContent);
-            
-            logger.info("Archivo guardado: {} para tenant {} lead {}", 
-                       storedFilename, tenantId, document.getLead().getId());
-            
-        } catch (IOException e) {
-            logger.error("Error al guardar archivo: {}", e.getMessage());
-            throw new RuntimeException("No se pudo guardar el archivo", e);
-        }
+        String storageKey = "tenant_" + tenantId + "/lead_" + document.getLead().getId() + "/" + storedFilename;
+
+        // Subir archivo al storage (local o R2)
+        String mimeType = detectMimeType(originalFilename);
+        storageService.uploadFile(storageKey, fileContent, mimeType);
+
+        logger.info("Archivo guardado: {} para tenant {} lead {}",
+                   storedFilename, tenantId, document.getLead().getId());
 
         // Configurar metadatos del documento
         Tenant tenant = new Tenant();
@@ -113,9 +96,9 @@ public class LeadDocumentService {
 
         document.setFileName(originalFilename);
         document.setStoredFilename(storedFilename);
-        document.setStorageUrl(leadPath.resolve(storedFilename).toString());
+        document.setStorageUrl(storageKey);
         document.setFileSize((long) fileContent.length);
-        document.setMimeType(detectMimeType(originalFilename));
+        document.setMimeType(mimeType);
         document.setUploadedAt(LocalDateTime.now());
         document.setVerified(false);
 
@@ -140,17 +123,8 @@ public class LeadDocumentService {
         LeadDocument document = leadDocumentRepository.findByIdAndTenantId(id, tenantId)
                 .orElseThrow(() -> new RuntimeException("Documento no encontrado"));
 
-        // Eliminar archivo físico
-        try {
-            Path filePath = Paths.get(document.getStorageUrl());
-            if (Files.exists(filePath)) {
-                Files.delete(filePath);
-                logger.info("Archivo eliminado: {}", document.getStoredFilename());
-            }
-        } catch (IOException e) {
-            logger.error("Error al eliminar archivo físico: {}", e.getMessage());
-            // Continuar con la eliminación del registro aunque falle el archivo
-        }
+        // Eliminar archivo del storage
+        storageService.deleteFile(document.getStorageUrl());
 
         leadDocumentRepository.delete(document);
     }
@@ -159,13 +133,7 @@ public class LeadDocumentService {
         LeadDocument document = leadDocumentRepository.findByIdAndTenantId(id, tenantId)
                 .orElseThrow(() -> new RuntimeException("Documento no encontrado"));
 
-        try {
-            Path filePath = Paths.get(document.getStorageUrl());
-            return Files.readAllBytes(filePath);
-        } catch (IOException e) {
-            logger.error("Error al leer archivo: {}", e.getMessage());
-            throw new RuntimeException("No se pudo leer el archivo", e);
-        }
+        return storageService.downloadFile(document.getStorageUrl());
     }
 
     // Métodos auxiliares

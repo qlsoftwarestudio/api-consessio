@@ -74,7 +74,7 @@ public class UserService {
         logger.info("Getting users for tenant: {}", currentTenantId);
         
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
-        Page<User> userPage = repository.findByTenantId(currentTenantId, pageable);
+        Page<User> userPage = repository.findByTenantIdAndIsActiveTrue(currentTenantId, pageable);
         Page<UserResponseDTO> responsePage = userPage.map(userMapper::toResponse);
         
         logger.info("Found {} users for tenant: {}", userPage.getTotalElements(), currentTenantId);
@@ -88,10 +88,11 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
-        if (!repository.existsById(id)) {
-            throw new ResourceNotFoundException("User not found with id: " + id);
-        }
-        repository.deleteById(id);
+        User user = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+        user.setActive(false);
+        repository.save(user);
+        logger.info("Soft deleted user with id: {}", id);
     }
 
     public boolean userExists(Long id) {

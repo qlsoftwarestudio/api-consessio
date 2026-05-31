@@ -10,10 +10,13 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> findAll(Pageable pageable);
     Page<User> findByTenantId(Long tenantId, Pageable pageable);
+    Page<User> findByTenantIdAndIsActiveTrue(Long tenantId, Pageable pageable);
     boolean existsByEmail(String email);
     boolean existsByEmailAndTenantId(String email, Long tenantId);
     Optional<User> findByEmail(String email);
     Optional<User> findByEmailAndTenantId(String email, Long tenantId);
+    Optional<User> findByEmailAndTenantIdAndIsActiveTrue(String email, Long tenantId);
     boolean existsByIdAndTenantId(Long id, Long tenantId);
+    long countByTenantIdAndIsActiveTrue(Long tenantId);
 }
 

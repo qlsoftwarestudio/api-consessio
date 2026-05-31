@@ -43,4 +43,11 @@ logging:
 # App Configuration
 app:
   storage:
+    provider: ${STORAGE_PROVIDER:local}  # 'local' o 'r2'
     path: ${APP_STORAGE_PATH:./uploads}
+    r2:
+      endpoint: ${R2_ENDPOINT:}
+      access-key: ${R2_ACCESS_KEY:}
+      secret-key: ${R2_SECRET_KEY:}
+      bucket: ${R2_BUCKET:concessio-documents}
+      public-url: ${R2_PUBLIC_URL:}

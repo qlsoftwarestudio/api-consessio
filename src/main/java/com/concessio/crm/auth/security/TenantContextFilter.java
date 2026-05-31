@@ -59,7 +59,7 @@ public class TenantContextFilter extends OncePerRequestFilter {
                     return;
                 }
 
-                userRepository.findByEmailAndTenantId(userEmail, tenantId).ifPresent(user -> {
+                userRepository.findByEmailAndTenantIdAndIsActiveTrue(userEmail, tenantId).ifPresent(user -> {
                     UserDetails userDetails = User.builder()
                             .username(user.getEmail())
                             .password(user.getPassword())

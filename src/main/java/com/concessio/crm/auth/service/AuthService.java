@@ -79,8 +79,8 @@ public class AuthService {
 
         Tenant tenant = tenantService.findByCode(tenantCode);
 
-        User user = userRepository.findByEmailAndTenantId(email, tenant.getId())
-                .orElseThrow(() -> new AuthenticationException("User not found"));
+        User user = userRepository.findByEmailAndTenantIdAndIsActiveTrue(email, tenant.getId())
+                .orElseThrow(() -> new AuthenticationException("User not found or inactive"));
 
         if (!encoder.matches(password, user.getPassword())) {
             throw new AuthenticationException("Invalid credentials");
