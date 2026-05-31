@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -46,6 +47,17 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> findById(@PathVariable Long id) {
         UserResponseDTO user = service.getUserById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getCurrentUser(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        UserResponseDTO user = service.getUserById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
         return ResponseEntity.ok(user);
     }
 

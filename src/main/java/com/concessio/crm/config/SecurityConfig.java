@@ -40,38 +40,38 @@ public class SecurityConfig {
                         // Public endpoints
                         .requestMatchers("/auth/**", "/health", "/actuator/**").permitAll()
                         
-                        // Users - Solo ADMIN puede gestionar usuarios
-                        .requestMatchers(HttpMethod.GET, "/users/**").hasAnyRole("ADMIN", "VENDEDOR")
-                        .requestMatchers(HttpMethod.POST, "/users/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/users/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
-                        
-                        // Leads - ADMIN y VENDEDOR pueden operar
-                        .requestMatchers("/api/leads/**").hasAnyRole("ADMIN", "VENDEDOR")
-                        
-                        // Vehicles - Solo ADMIN puede modificar, todos pueden ver
-                        .requestMatchers(HttpMethod.GET, "/api/vehicles/**").hasAnyRole("ADMIN", "VENDEDOR")
-                        .requestMatchers(HttpMethod.POST, "/api/vehicles/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/vehicles/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/vehicles/**").hasRole("ADMIN")
-                        
-                        // Quotations - ADMIN y VENDEDOR
-                        .requestMatchers("/api/quotations/**").hasAnyRole("ADMIN", "VENDEDOR")
-                        
-                        // Test Drives - ADMIN y VENDEDOR
-                        .requestMatchers("/api/test-drives/**").hasAnyRole("ADMIN", "VENDEDOR")
-                        
-                        // Documents - ADMIN y VENDEDOR
-                        .requestMatchers("/api/documents/**").hasAnyRole("ADMIN", "VENDEDOR")
-                        
-                        // Activities - ADMIN y VENDEDOR
-                        .requestMatchers("/api/activities/**").hasAnyRole("ADMIN", "VENDEDOR")
-                        
-                        // Excel Upload - Solo ADMIN
-                        .requestMatchers("/api/excel/**").hasRole("ADMIN")
-                        
-                        // Dashboard/Stats - ADMIN y VENDEDOR
-                        .requestMatchers("/api/stats/**").hasAnyRole("ADMIN", "VENDEDOR")
+                        // Users - GERENTE/SUPERVISOR/ADMIN_SISTEMA admin; todos leen
+                        .requestMatchers(HttpMethod.GET, "/users/**").hasAnyRole("GERENTE", "SUPERVISOR", "VENDEDORA", "PLANES", "ADMIN_SISTEMA")
+                        .requestMatchers(HttpMethod.POST, "/users/**").hasAnyRole("GERENTE", "SUPERVISOR", "ADMIN_SISTEMA")
+                        .requestMatchers(HttpMethod.PUT, "/users/**").hasAnyRole("GERENTE", "SUPERVISOR", "ADMIN_SISTEMA")
+                        .requestMatchers(HttpMethod.DELETE, "/users/**").hasAnyRole("GERENTE", "SUPERVISOR", "ADMIN_SISTEMA")
+
+                        // Leads - todos los roles
+                        .requestMatchers("/api/leads/**").hasAnyRole("GERENTE", "SUPERVISOR", "VENDEDORA", "PLANES", "ADMIN_SISTEMA")
+
+                        // Vehicles - GERENTE/SUPERVISOR/ADMIN_SISTEMA modifica; todos leen
+                        .requestMatchers(HttpMethod.GET, "/api/vehicles/**").hasAnyRole("GERENTE", "SUPERVISOR", "VENDEDORA", "PLANES", "ADMIN_SISTEMA")
+                        .requestMatchers(HttpMethod.POST, "/api/vehicles/**").hasAnyRole("GERENTE", "SUPERVISOR", "ADMIN_SISTEMA")
+                        .requestMatchers(HttpMethod.PUT, "/api/vehicles/**").hasAnyRole("GERENTE", "SUPERVISOR", "ADMIN_SISTEMA")
+                        .requestMatchers(HttpMethod.DELETE, "/api/vehicles/**").hasAnyRole("GERENTE", "SUPERVISOR", "ADMIN_SISTEMA")
+
+                        // Quotations - todos
+                        .requestMatchers("/api/quotations/**").hasAnyRole("GERENTE", "SUPERVISOR", "VENDEDORA", "PLANES", "ADMIN_SISTEMA")
+
+                        // Test Drives - todos
+                        .requestMatchers("/api/test-drives/**").hasAnyRole("GERENTE", "SUPERVISOR", "VENDEDORA", "PLANES", "ADMIN_SISTEMA")
+
+                        // Documents - todos
+                        .requestMatchers("/api/documents/**").hasAnyRole("GERENTE", "SUPERVISOR", "VENDEDORA", "PLANES", "ADMIN_SISTEMA")
+
+                        // Activities - todos
+                        .requestMatchers("/api/activities/**").hasAnyRole("GERENTE", "SUPERVISOR", "VENDEDORA", "PLANES", "ADMIN_SISTEMA")
+
+                        // Excel Upload - GERENTE/SUPERVISOR/ADMIN_SISTEMA
+                        .requestMatchers("/api/excel/**").hasAnyRole("GERENTE", "SUPERVISOR", "ADMIN_SISTEMA")
+
+                        // Dashboard/Stats - todos
+                        .requestMatchers("/api/stats/**").hasAnyRole("GERENTE", "SUPERVISOR", "VENDEDORA", "PLANES", "ADMIN_SISTEMA")
                         
                         .anyRequest().authenticated()
                 )
@@ -85,7 +85,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
                 "https://consessio-front.vercel.app",
-                "https://www.consessio.com"
+                "https://www.consessio.com",
+                "http://localhost:8081"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With"));
