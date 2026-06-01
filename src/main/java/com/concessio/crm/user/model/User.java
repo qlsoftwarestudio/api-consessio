@@ -69,7 +69,7 @@ public class User {
     public String getLastname() { return lastname; }
     public String getEmail() { return email; }
     public String getPhone() { return phone; }
-    public boolean getIsActive() { return isActive; }
+    public boolean isActive() { return isActive; }
     public Role getRole() { return role; }
     public String getPassword() { return password; }
 

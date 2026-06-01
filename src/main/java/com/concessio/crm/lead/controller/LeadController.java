@@ -92,7 +92,7 @@ public class LeadController {
     }
 
     @PutMapping("/{id}/assign/{userId}")
-    public ResponseEntity<Lead> assignLead(@PathVariable Long id, @PathVariable Long userId, @RequestAttribute Long currentUserId) {
+    public ResponseEntity<Lead> assignLead(@PathVariable Long id, @PathVariable Long userId, @RequestAttribute(name = "userId") Long currentUserId) {
         Long tenantId = TenantContext.getCurrentTenant();
         Lead updated = leadService.assignToUser(id, userId, tenantId, currentUserId);
         return ResponseEntity.ok(updated);

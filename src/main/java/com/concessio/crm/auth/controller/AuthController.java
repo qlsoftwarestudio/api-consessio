@@ -41,8 +41,8 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserRequestDTO request) {
         logger.info("Register request received for email: {}", request.getEmail());
-        String token = authService.register(request);
-        return ResponseEntity.ok(Map.of("token", token, "message", "User registered successfully"));
+        var result = authService.register(request);
+        return ResponseEntity.ok(Map.of("token", result.token(), "id", result.userId(), "message", "User registered successfully"));
     }
 
     @PostMapping("/login")

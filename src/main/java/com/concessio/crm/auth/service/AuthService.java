@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
+    public record RegistrationResult(String token, Long userId) {}
+
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     private final UserRepository userRepository;
@@ -37,7 +39,7 @@ public class AuthService {
         this.tenantService = tenantService;
     }
 
-    public String register(UserRequestDTO userRequest) {
+    public RegistrationResult register(UserRequestDTO userRequest) {
 
         logger.info("Attempting to register user with email: {}", userRequest.getEmail());
 
@@ -59,6 +61,7 @@ public class AuthService {
         // Create new user from DTO using mapper
         User newUser = userMapper.toEntity(userRequest);
         newUser.setTenant(tenant);
+        newUser.setActive(userRequest.isActive()); // Forzar valor isActive del DTO
         
         // Encode password
         String hashedPassword = encoder.encode(userRequest.getPassword());
@@ -68,7 +71,7 @@ public class AuthService {
             User savedUser = userRepository.save(newUser);
             logger.info("User registered successfully: {} with ID: {} in tenant: {}", savedUser.getEmail(), savedUser.getId(), currentTenantId);
             String token = jwtService.generateToken(savedUser.getEmail(), currentTenantId);
-            return token;
+            return new RegistrationResult(token, savedUser.getId());
         } catch (Exception e) {
             logger.error("Failed to save user: {}", e.getMessage(), e);
             throw new IllegalArgumentException("Failed to register user: " + e.getMessage());

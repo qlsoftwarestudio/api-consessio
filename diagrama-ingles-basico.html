@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprende Inglés - Estructura de Oraciones</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+        
+        .sentence-box {
+            background: #f0f4ff;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .sentence {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        
+        .word {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .word:hover {
+            transform: scale(1.1);
+        }
+        
+        .subject {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .verb {
+            background: #4ecdc4;
+            color: white;
+        }
+        
+        .adjective {
+            background: #ffe66d;
+            color: #333;
+        }
+        
+        .noun {
+            background: #95e1d3;
+            color: #333;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+        }
+        
+        .structure-diagram {
+            background: #fff9c4;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .structure-title {
+            text-align: center;
+            color: #333;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+        
+        .diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .diagram-box {
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .arrow {
+            font-size: 2em;
+            color: #666;
+        }
+        
+        .explanation {
+            background: #e8f5e9;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .explanation h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+        
+        .explanation p {
+            color: #333;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+        
+        .examples {
+            background: #fce4ec;
+            border-radius: 15px;
+            padding: 25px;
+        }
+        
+        .examples h3 {
+            color: #c2185b;
+            margin-bottom: 15px;
+        }
+        
+        .example-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            font-size: 1.1em;
+        }
+        
+        .formula {
+            background: #e3f2fd;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .formula h3 {
+            color: #1565c0;
+            margin-bottom: 15px;
+        }
+        
+        .formula-text {
+            font-size: 1.3em;
+            color: #333;
+        }
+        
+        .tips {
+            background: #fff3e0;
+            border-radius: 15px;
+            padding: 25px;
+        }
+        
+        .tips h3 {
+            color: #e65100;
+            margin-bottom: 15px;
+        }
+        
+        .tips ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .tips li {
+            padding: 10px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .tips li:before {
+            content: "💡 ";
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌟 Aprende Inglés 🌟</h1>
+        <p class="subtitle">Estructura de Oraciones - Nivel Inicial</p>
+        
+        <div class="sentence-box">
+            <h2>📝 Oración Principal:</h2>
+            <div class="sentence">
+                <span class="word subject">I'm</span>
+                <span class="word verb">wearing</span>
+                <span class="word adjective">a black</span>
+                <span class="word noun">shirt</span>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ff6b6b;"></div>
+                <span><strong>SUJETO</strong> (Quién hace la acción)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #4ecdc4;"></div>
+                <span><strong>VERBO</strong> (La acción)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ffe66d;"></div>
+                <span><strong>ADJETIVO</strong> (Describe)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #95e1d3;"></div>
+                <span><strong>SUSTANTIVO</strong> (El objeto)</span>
+            </div>
+        </div>
+        
+        <div class="structure-diagram">
+            <h2 class="structure-title">🔗 Estructura de la Oración</h2>
+            <div class="diagram">
+                <div class="diagram-box subject">SUJETO</div>
+                <span class="arrow">→</span>
+                <div class="diagram-box verb">VERBO</div>
+                <span class="arrow">→</span>
+                <div class="diagram-box adjective">ADJETIVO</div>
+                <span class="arrow">→</span>
+                <div class="diagram-box noun">SUSTANTIVO</div>
+            </div>
+            <div class="diagram" style="margin-top: 20px;">
+                <div class="diagram-box subject">I'm (I am)</div>
+                <span class="arrow">→</span>
+                <div class="diagram-box verb">wearing</div>
+                <span class="arrow">→</span>
+                <div class="diagram-box adjective">a black</div>
+                <span class="arrow">→</span>
+                <div class="diagram-box noun">shirt</div>
+            </div>
+        </div>
+        
+        <div class="formula">
+            <h3>📐 Fórmula Mágica</h3>
+            <p class="formula-text">
+                <strong>SUJETO</strong> + <strong>VERBO</strong> + <strong>ADJETIVO</strong> + <strong>SUSTANTIVO</strong>
+            </p>
+            <p style="margin-top: 15px; color: #666;">
+                (Quién) + (Acción) + (Cómo es) + (Qué cosa)
+            </p>
+        </div>
+        
+        <div class="explanation">
+            <h3>📖 Explicación</h3>
+            <p><strong>I'm</strong> = "I am" (Yo soy/estoy) - Es el <strong>SUJETO</strong>, quien hace la acción</p>
+            <p><strong>wearing</strong> = "usando/llevando puesto" - Es el <strong>VERBO</strong>, la acción que está ocurriendo ahora</p>
+            <p><strong>a black</strong> = "una negra" - Es el <strong>ADJETIVO</strong>, describe el color de la camisa</p>
+            <p><strong>shirt</strong> = "camisa" - Es el <strong>SUSTANTIVO</strong>, el objeto del que hablamos</p>
+        </div>
+        
+        <div class="examples">
+            <h3>🎯 Más Ejemplos</h3>
+            <div class="example-item">
+                <span class="word subject">She's</span>
+                <span class="word verb">eating</span>
+                <span class="word adjective">a red</span>
+                <span class="word noun">apple</span>
+                <br>
+                <small>(Ella está comiendo una manzana roja)</small>
+            </div>
+            <div class="example-item">
+                <span class="word subject">He's</span>
+                <span class="word verb">reading</span>
+                <span class="word adjective">a big</span>
+                <span class="word noun">book</span>
+                <br>
+                <small>(Él está leyendo un libro grande)</small>
+            </div>
+            <div class="example-item">
+                <span class="word subject">We're</span>
+                <span class="word verb">playing</span>
+                <span class="word adjective">a fun</span>
+                <span class="word noun">game</span>
+                <br>
+                <small>(Nosotros estamos jugando un juego divertido)</small>
+            </div>
+            <div class="example-item">
+                <span class="word subject">They're</span>
+                <span class="word verb">watching</span>
+                <span class="word adjective">a new</span>
+                <span class="word noun">movie</span>
+                <br>
+                <small>(Ellos están viendo una película nueva)</small>
+            </div>
+        </div>
+        
+        <div class="tips">
+            <h3>💡 Consejos Importantes</h3>
+            <ul>
+                <li><strong>I'm</strong> es la contracción de "I am" - ¡Úsalo siempre!</li>
+                <li><strong>Presente Continuo</strong>: Usamos "am/is/are + verbo con -ing" para acciones que están ocurriendo AHORA</li>
+                <li>El <strong>adjetivo</strong> siempre va ANTES del sustantivo en inglés</li>
+                <li>Los colores son adjetivos: red, blue, green, black, white, yellow</li>
+                <li>Practica cambiando las palabras para crear nuevas oraciones</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

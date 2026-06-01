@@ -38,7 +38,7 @@ public class UserRequestDTO {
     public void setRole(Role role) { this.role = role; }
     
     public boolean isActive() { return isActive; }
-    public void setActive(boolean isActive) { this.isActive = isActive; }
+    public void setIsActive(boolean isActive) { this.isActive = isActive; }
     
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
