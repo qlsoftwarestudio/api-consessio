@@ -19,7 +19,7 @@ public class UserRequestDTO {
     private Role role;
     
     @NotNull
-    private boolean isActive;
+    private boolean isActive = true;
     
     @NotBlank
     private String password;
