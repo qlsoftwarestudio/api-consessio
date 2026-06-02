@@ -71,14 +71,13 @@ public class OnboardingService {
 
     private String generateTenantCode(String businessName) {
         // Generar código de sucursal a partir del nombre
-        // Ej: "Giamma Belgrano" -> "BEL"
-        // Ej: "Giamma Mataderos" -> "MAT"
+        // Ej: "Giamma Belgrano" -> "BELGRANO"
+        // Ej: "Giamma Mataderos" -> "MATADEROS"
         String[] words = businessName.toUpperCase().split("\\s+");
         if (words.length > 1) {
-            // Usar la última palabra (generalmente la ubicación)
-            String location = words[words.length - 1];
-            return location.substring(0, Math.min(3, location.length()));
+            // Usar la última palabra completa (generalmente la ubicación)
+            return words[words.length - 1];
         }
-        return businessName.substring(0, Math.min(3, businessName.length())).toUpperCase();
+        return businessName.toUpperCase();
     }
 }
