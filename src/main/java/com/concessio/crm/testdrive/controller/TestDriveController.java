@@ -1,6 +1,8 @@
 package com.concessio.crm.testdrive.controller;
 
 import com.concessio.crm.tenant.TenantContext;
+import com.concessio.crm.testdrive.dto.CancelTestDriveRequest;
+import com.concessio.crm.testdrive.dto.CompleteTestDriveRequest;
 import com.concessio.crm.testdrive.model.TestDrive;
 import com.concessio.crm.testdrive.service.TestDriveService;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +50,19 @@ public class TestDriveController {
         return ResponseEntity.ok(testDrives);
     }
 
+    @GetMapping("/today")
+    public ResponseEntity<List<TestDrive>> getTodayTestDrives() {
+        Long tenantId = TenantContext.getCurrentTenant();
+        List<TestDrive> testDrives = testDriveService.findTodayTestDrives(tenantId);
+        return ResponseEntity.ok(testDrives);
+    }
+
+    @GetMapping("/my-test-drives")
+    public ResponseEntity<List<TestDrive>> getMyTestDrives(@RequestAttribute Long userId) {
+        List<TestDrive> testDrives = testDriveService.findMyTestDrives(userId);
+        return ResponseEntity.ok(testDrives);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<TestDrive> getTestDriveById(@PathVariable Long id) {
         Long tenantId = TenantContext.getCurrentTenant();
@@ -75,25 +90,49 @@ public class TestDriveController {
         }
     }
 
-    @PutMapping("/{id}/complete")
-    public ResponseEntity<TestDrive> completeTestDrive(@PathVariable Long id, @RequestBody String notes) {
+    @PutMapping("/{id}")
+    public ResponseEntity<TestDrive> updateTestDrive(@PathVariable Long id, @RequestBody TestDrive testDrive,
+                                                       @RequestAttribute Long userId) {
         Long tenantId = TenantContext.getCurrentTenant();
         try {
-            TestDrive updated = testDriveService.complete(id, tenantId, notes);
+            TestDrive updated = testDriveService.update(id, testDrive, tenantId, userId);
             return ResponseEntity.ok(updated);
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @PutMapping("/{id}/complete")
+    public ResponseEntity<TestDrive> completeTestDrive(@PathVariable Long id, @RequestBody CompleteTestDriveRequest request) {
+        Long tenantId = TenantContext.getCurrentTenant();
+        try {
+            TestDrive updated = testDriveService.complete(id, tenantId, request.getNotes(), request.getKmAfter());
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(null);
         }
     }
 
     @PutMapping("/{id}/cancel")
-    public ResponseEntity<TestDrive> cancelTestDrive(@PathVariable Long id) {
+    public ResponseEntity<TestDrive> cancelTestDrive(@PathVariable Long id, @RequestBody(required = false) CancelTestDriveRequest request) {
         Long tenantId = TenantContext.getCurrentTenant();
         try {
-            TestDrive updated = testDriveService.cancel(id, tenantId);
+            String reason = request != null ? request.getReason() : null;
+            TestDrive updated = testDriveService.cancel(id, tenantId, reason);
             return ResponseEntity.ok(updated);
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @PutMapping("/{id}/no-show")
+    public ResponseEntity<TestDrive> noShowTestDrive(@PathVariable Long id) {
+        Long tenantId = TenantContext.getCurrentTenant();
+        try {
+            TestDrive updated = testDriveService.noShow(id, tenantId);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(null);
         }
     }
 

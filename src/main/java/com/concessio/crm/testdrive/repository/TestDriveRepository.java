@@ -29,6 +29,15 @@ public interface TestDriveRepository extends JpaRepository<TestDrive, Long> {
                                                 @Param("start") LocalDateTime start, 
                                                 @Param("end") LocalDateTime end);
 
+    @Query("SELECT td FROM TestDrive td WHERE td.vehicle.id = :vehicleId AND td.tenant.id = :tenantId " +
+           "AND td.status NOT IN ('CANCELADO', 'NO_SHOW') " +
+           "AND td.id <> :excludeId " +
+           "AND td.scheduledAt <= :endTime")
+    List<TestDrive> findPotentialOverlapsByVehicle(@Param("vehicleId") Long vehicleId,
+                                                      @Param("tenantId") Long tenantId,
+                                                      @Param("endTime") LocalDateTime endTime,
+                                                      @Param("excludeId") Long excludeId);
+
     @Query("SELECT td FROM TestDrive td WHERE td.reminderSent = false AND td.scheduledAt BETWEEN :now AND :reminderTime")
     List<TestDrive> findPendingReminders(@Param("now") LocalDateTime now, 
                                           @Param("reminderTime") LocalDateTime reminderTime);

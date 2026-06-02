@@ -7,6 +7,7 @@ import com.concessio.crm.vehicle.model.Vehicle;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -33,6 +34,31 @@ public class TestDrive {
 
     @NotNull
     private LocalDateTime scheduledAt; // Fecha y hora agendada
+
+    @Column(nullable = false)
+    private Integer durationMinutes = 60; // Duración por defecto: 1 hora
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "accompanied_by")
+    private User accompanieBy; // Vendedor que acompaña al cliente
+
+    private String clientLicenseNumber; // Número de licencia del cliente
+    private String clientLicenseType;   // Tipo: A, B, C, etc.
+    private LocalDate clientLicenseExpiry; // Vencimiento
+
+    private Integer kmBefore;  // Kilometraje al salir
+    private Integer kmAfter;   // Kilometraje al retornar
+
+    @Column(length = 2000)
+    private String vehicleConditionBefore; // Estado del vehículo antes del test
+
+    @Column(length = 2000)
+    private String vehicleConditionAfter;  // Estado del vehículo al retornar
+
+    private String cancellationReason; // Motivo de cancelación
+
+    @Column(nullable = false)
+    private boolean noShow = false; // Cliente no asistió
 
     private String location; // Ubicación/sucursal donde se hace
 
@@ -64,6 +90,8 @@ public class TestDrive {
         this.reminderSent = false;
         this.confirmationSent = false;
         this.interested = false;
+        this.noShow = false;
+        this.durationMinutes = 60;
     }
 
     // Getters y Setters
@@ -120,6 +148,39 @@ public class TestDrive {
 
     public LocalDateTime getCompletedAt() { return completedAt; }
     public void setCompletedAt(LocalDateTime completedAt) { this.completedAt = completedAt; }
+
+    public Integer getDurationMinutes() { return durationMinutes; }
+    public void setDurationMinutes(Integer durationMinutes) { this.durationMinutes = durationMinutes; }
+
+    public User getAccompanieBy() { return accompanieBy; }
+    public void setAccompanieBy(User accompanieBy) { this.accompanieBy = accompanieBy; }
+
+    public String getClientLicenseNumber() { return clientLicenseNumber; }
+    public void setClientLicenseNumber(String clientLicenseNumber) { this.clientLicenseNumber = clientLicenseNumber; }
+
+    public String getClientLicenseType() { return clientLicenseType; }
+    public void setClientLicenseType(String clientLicenseType) { this.clientLicenseType = clientLicenseType; }
+
+    public LocalDate getClientLicenseExpiry() { return clientLicenseExpiry; }
+    public void setClientLicenseExpiry(LocalDate clientLicenseExpiry) { this.clientLicenseExpiry = clientLicenseExpiry; }
+
+    public Integer getKmBefore() { return kmBefore; }
+    public void setKmBefore(Integer kmBefore) { this.kmBefore = kmBefore; }
+
+    public Integer getKmAfter() { return kmAfter; }
+    public void setKmAfter(Integer kmAfter) { this.kmAfter = kmAfter; }
+
+    public String getVehicleConditionBefore() { return vehicleConditionBefore; }
+    public void setVehicleConditionBefore(String vehicleConditionBefore) { this.vehicleConditionBefore = vehicleConditionBefore; }
+
+    public String getVehicleConditionAfter() { return vehicleConditionAfter; }
+    public void setVehicleConditionAfter(String vehicleConditionAfter) { this.vehicleConditionAfter = vehicleConditionAfter; }
+
+    public String getCancellationReason() { return cancellationReason; }
+    public void setCancellationReason(String cancellationReason) { this.cancellationReason = cancellationReason; }
+
+    public boolean isNoShow() { return noShow; }
+    public void setNoShow(boolean noShow) { this.noShow = noShow; }
 
     @PreUpdate
     public void preUpdate() {
