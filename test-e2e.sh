@@ -32,8 +32,8 @@ SUPERVISOR_EMAIL="e2e-supervisor-${TIMESTAMP}@giamma.com"
 PLANES_EMAIL="e2e-planes-${TIMESTAMP}@giamma.com"
 TEMP_EMAIL="e2e-temp-${TIMESTAMP}@giamma.com"
 
-# Tenant code: backend lo genera de la ultima palabra del business name
-TENANT_CODE=$(printf '%03d' "$RAND_CODE")
+# Tenant code: backend lo genera como la ULTIMA PALABRA COMPLETA del business name
+TENANT_CODE="$RAND_CODE"
 info "Tenant code esperado: $TENANT_CODE"
 
 # ========== 1. ONBOARDING ==========
@@ -212,7 +212,7 @@ info "10. Creando test drive como VENDEDORA..."
 TD_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/api/test-drives" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $VENDEDORA_TOKEN" \
-  -d "{\"lead\":{\"id\":$LEAD_ID},\"vehicle\":{\"id\":$VEHICLE_ID},\"scheduledAt\":\"2026-06-15T10:00:00\",\"vehicleModel\":\"Toyota Corolla\",\"location\":\"Sucursal Test\"}")
+  -d "{\"lead\":{\"id\":$LEAD_ID},\"vehicle\":{\"id\":$VEHICLE_ID},\"scheduledAt\":\"2026-06-15T10:00:00\",\"durationMinutes\":60,\"kmBefore\":15000,\"vehicleModel\":\"Toyota Corolla\",\"location\":\"Sucursal Test\"}")
 
 HTTP_CODE=$(echo "$TD_RESPONSE" | tail -n1)
 BODY=$(echo "$TD_RESPONSE" | sed '$d')
@@ -223,6 +223,116 @@ if [ "$HTTP_CODE" = "200" ]; then
 else
     error "Error creando test drive (HTTP $HTTP_CODE)"
     echo "$BODY" >&2
+fi
+
+# ========== 10a. CONFIRMAR TEST DRIVE ==========
+info "10a. Confirmando test drive..."
+
+CONFIRM_TD=$(curl -s -w "\n%{http_code}" -X PUT "$BASE_URL/api/test-drives/$TD_ID/confirm" \
+  -H "Authorization: Bearer $VENDEDORA_TOKEN")
+
+CONFIRM_CODE=$(echo "$CONFIRM_TD" | tail -n1)
+if [ "$CONFIRM_CODE" = "200" ]; then
+    success "Test drive confirmado OK"
+else
+    error "Error confirmando test drive (HTTP $CONFIRM_CODE)"
+    echo "$CONFIRM_TD" | sed '$d' >&2
+fi
+
+# ========== 10b. COMPLETAR TEST DRIVE ==========
+info "10b. Completando test drive..."
+
+COMPLETE_TD=$(curl -s -w "\n%{http_code}" -X PUT "$BASE_URL/api/test-drives/$TD_ID/complete" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $VENDEDORA_TOKEN" \
+  -d "{\"notes\":\"Cliente muy interesado, prefiere color rojo\",\"kmAfter\":15045}")
+
+COMPLETE_CODE=$(echo "$COMPLETE_TD" | tail -n1)
+if [ "$COMPLETE_CODE" = "200" ]; then
+    success "Test drive completado OK"
+else
+    error "Error completando test drive (HTTP $COMPLETE_CODE)"
+    echo "$COMPLETE_TD" | sed '$d' >&2
+fi
+
+# ========== 10c. VERIFICAR MY-TEST-DRIVES ==========
+info "10c. Verificando /api/test-drives/my-test-drives..."
+
+MY_TD=$(curl -s -w "%{http_code}" -X GET "$BASE_URL/api/test-drives/my-test-drives" \
+  -H "Authorization: Bearer $VENDEDORA_TOKEN")
+
+if echo "$MY_TD" | grep -q "200$"; then
+    success "My test drives OK"
+else
+    error "My test drives falló"
+fi
+
+# ========== 10d. VERIFICAR LEAD STATUS ACTUALIZADO ==========
+info "10d. Verificando que lead pasó a TEST_DRIVE_COMPLETADO..."
+
+LEAD_STATUS_CHECK=$(curl -s -X GET "$BASE_URL/api/leads/$LEAD_ID" -H "Authorization: Bearer $ADMIN_TOKEN")
+if echo "$LEAD_STATUS_CHECK" | grep -q "TEST_DRIVE_COMPLETADO"; then
+    success "Lead actualizado a TEST_DRIVE_COMPLETADO"
+else
+    error "Lead no se actualizó correctamente"
+    echo "$LEAD_STATUS_CHECK" >&2
+fi
+
+# ========== 10e. CANCELAR TEST DRIVE CON MOTIVO ==========
+info "10e. Creando y cancelando un segundo test drive..."
+
+TD2_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/api/test-drives" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $VENDEDORA_TOKEN" \
+  -d "{\"lead\":{\"id\":$LEAD_ID},\"scheduledAt\":\"2026-06-16T14:00:00\",\"durationMinutes\":60,\"vehicleModel\":\"Fiat Pulse\",\"location\":\"Sucursal Test\"}")
+
+TD2_CODE=$(echo "$TD2_RESPONSE" | tail -n1)
+TD2_BODY=$(echo "$TD2_RESPONSE" | sed '$d')
+
+if [ "$TD2_CODE" = "200" ]; then
+    TD2_ID=$(json_value "$TD2_BODY" id)
+
+    CANCEL2=$(curl -s -w "\n%{http_code}" -X PUT "$BASE_URL/api/test-drives/$TD2_ID/cancel" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer $VENDEDORA_TOKEN" \
+      -d "{\"reason\":\"Cliente no puede asistir\"}")
+
+    CANCEL2_CODE=$(echo "$CANCEL2" | tail -n1)
+    if [ "$CANCEL2_CODE" = "200" ]; then
+        success "Test drive cancelado con motivo OK"
+    else
+        error "Error cancelando test drive 2 (HTTP $CANCEL2_CODE)"
+    fi
+else
+    error "Error creando test drive 2 (HTTP $TD2_CODE)"
+fi
+
+# ========== 10f. NO-SHOW TEST DRIVE ==========
+info "10f. Creando y marcando no-show un tercer test drive..."
+
+TD3_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/api/test-drives" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $VENDEDORA_TOKEN" \
+  -d "{\"lead\":{\"id\":$LEAD_ID},\"scheduledAt\":\"2026-06-17T11:00:00\",\"durationMinutes\":60,\"vehicleModel\":\"Fiat Pulse\",\"location\":\"Sucursal Test\"}")
+
+TD3_CODE=$(echo "$TD3_RESPONSE" | tail -n1)
+TD3_BODY=$(echo "$TD3_RESPONSE" | sed '$d')
+
+if [ "$TD3_CODE" = "200" ]; then
+    TD3_ID=$(json_value "$TD3_BODY" id)
+
+    NOSHOW=$(curl -s -w "\n%{http_code}" -X PUT "$BASE_URL/api/test-drives/$TD3_ID/no-show" \
+      -H "Authorization: Bearer $VENDEDORA_TOKEN")
+
+    NOSHOW_CODE=$(echo "$NOSHOW" | tail -n1)
+    if [ "$NOSHOW_CODE" = "200" ]; then
+        success "Test drive marcado como NO_SHOW OK"
+    else
+        error "Error marcando no-show (HTTP $NOSHOW_CODE)"
+        echo "$NOSHOW" | sed '$d' >&2
+    fi
+else
+    error "Error creando test drive 3 (HTTP $TD3_CODE)"
 fi
 
 # ========== 11. CREAR ACTIVIDAD (VENDEDORA) ==========

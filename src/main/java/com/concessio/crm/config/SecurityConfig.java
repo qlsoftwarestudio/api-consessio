@@ -72,6 +72,10 @@ public class SecurityConfig {
 
                         // Dashboard/Stats - todos
                         .requestMatchers("/api/stats/**").hasAnyRole("GERENTE", "SUPERVISOR", "VENDEDORA", "PLANES", "ADMIN_SISTEMA")
+
+                        // Copilot - ranking solo gerencia/supervision; resto todos los roles
+                        .requestMatchers("/api/copilot/ranking").hasAnyRole("GERENTE", "SUPERVISOR", "ADMIN_SISTEMA")
+                        .requestMatchers("/api/copilot/**").hasAnyRole("GERENTE", "SUPERVISOR", "VENDEDORA", "PLANES", "ADMIN_SISTEMA")
                         
                         .anyRequest().authenticated()
                 )
