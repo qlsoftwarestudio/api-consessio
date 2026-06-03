@@ -3,6 +3,7 @@ package com.concessio.crm.document.controller;
 import com.concessio.crm.document.model.DocumentType;
 import com.concessio.crm.document.model.LeadDocument;
 import com.concessio.crm.document.service.LeadDocumentService;
+import com.concessio.crm.lead.model.Lead;
 import com.concessio.crm.tenant.TenantContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -63,10 +64,20 @@ public class LeadDocumentController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<LeadDocument> uploadDocument(
-            @RequestPart("document") LeadDocument document,
-            @RequestPart("file") MultipartFile file,
+            @RequestParam("leadId") Long leadId,
+            @RequestParam("type") DocumentType type,
+            @RequestParam(value = "notes", required = false) String notes,
+            @RequestParam("file") MultipartFile file,
             @RequestAttribute Long userId) throws IOException {
         Long tenantId = TenantContext.getCurrentTenant();
+
+        LeadDocument document = new LeadDocument();
+        Lead lead = new Lead();
+        lead.setId(leadId);
+        document.setLead(lead);
+        document.setType(type);
+        document.setNotes(notes);
+
         LeadDocument saved = leadDocumentService.uploadDocument(
             document, 
             file.getBytes(), 
